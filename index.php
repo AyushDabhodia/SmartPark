@@ -82,9 +82,9 @@
     <h2>🚗 SmartPark</h2>
 
     <div>
-        <a href="#">Home</a>
-        <a href="#">Find Parking</a>
-        <a href="#">Login</a>
+        <a href="index.php">Home</a>
+        <a href="login.php">Find Parking</a>
+        <a href="login.php">Login</a>
     </div>
 </nav>
 
@@ -96,8 +96,8 @@
         Find, predict and reserve parking using AI.
     </p>
 
-    <a href="#" class="button">
-        Find Parking
+    <a href="login.php" class="button">
+    Find Parking
     </a>
 
 </section>
