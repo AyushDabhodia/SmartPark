@@ -6,147 +6,221 @@ include "db.php";
 $sql = "SELECT * FROM parking_slots";
 $result = $conn->query($sql);
 
+$total_slots = 0;
+$available_slots = 0;
+$occupied_slots = 0;
+
+$slots = [];
+
+while ($row = $result->fetch_assoc()) {
+    $slots[] = $row;
+
+    $total_slots++;
+
+    if ($row['status'] == 'available') {
+        $available_slots++;
+    } else {
+        $occupied_slots++;
+    }
+}
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Find Parking - SmartPark</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f7fa;
-        }
+    <link rel="stylesheet" href="assets/css/style.css">
 
-        nav {
-            background: #111827;
-            color: white;
-            padding: 20px 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        nav h2 {
-            margin: 0;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 25px;
-        }
-
-        .container {
-            padding: 50px;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        .slots {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-top: 40px;
-        }
-
-        .slot {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-
-        .available {
-            border-top: 5px solid #22c55e;
-        }
-
-        .occupied {
-            border-top: 5px solid #ef4444;
-        }
-
-        .slot-number {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .status {
-            margin-top: 10px;
-            font-weight: bold;
-        }
-    </style>
 </head>
 
 <body>
 
-<nav>
-    <h2>🚗 SmartPark</h2>
+<?php include "components/navbar.php"; ?>
 
-    <div>
-        <a href="index.php">Home</a>
 
-        <a href="parking.php">Find Parking</a>
-        <a href="my_reservations.php">My Reservations</a>
+<main>
 
-        <?php if (isset($_SESSION['user_name'])) { ?>
+    <!-- PAGE HEADER -->
 
-            <span>
-                Welcome, <?php echo $_SESSION['user_name']; ?>
-            </span>
+    <section class="hero">
 
-            <a href="logout.php">Logout</a>
+        <div class="hero-content">
 
-        <?php } else { ?>
+            <div class="hero-label">
+                PARKING AVAILABILITY
+            </div>
 
-            <a href="login.php">Login</a>
-            <a href="register.php">Register</a>
+            <h1>
+                Find Your<br>
+                Parking Space.
+            </h1>
 
-        <?php } ?>
+            <p class="hero-description">
+                Choose an available parking slot and reserve
+                it for your preferred time.
+            </p>
 
-    </div>
-</nav>
+        </div>
 
-<div class="container">
+    </section>
 
-    <h1>Available Parking Slots</h1>
 
-    <div class="slots">
+    <!-- PARKING SUMMARY -->
 
-        <?php while ($row = $result->fetch_assoc()) { ?>
+    <div class="container">
 
-            <div class="slot <?php echo $row['status']; ?>">
+        <div class="slot-grid">
 
-                <div class="slot-number">
-                    🅿️ <?php echo $row['slot_number']; ?>
+            <div class="card">
+
+                <div class="card-title">
+                    Total Slots
                 </div>
 
-                <div>
-                    Type: <?php echo $row['slot_type']; ?>
+                <div class="stat-number">
+                    <?php echo $total_slots; ?>
                 </div>
-
-                <div class="status">
-                    <?php echo strtoupper($row['status']); ?>
-                </div>
-                <?php if ($row['status'] == 'available') { ?>
-
-    <a href="reserve.php?slot_id=<?php echo $row['id']; ?>">
-        <button>Reserve Slot</button>
-    </a>
-
-<?php } ?>
 
             </div>
 
-        <?php } ?>
+
+            <div class="card">
+
+                <div class="card-title">
+                    Available
+                </div>
+
+                <div class="stat-number">
+                    <?php echo $available_slots; ?>
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Occupied
+                </div>
+
+                <div class="stat-number">
+                    <?php echo $occupied_slots; ?>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PARKING SECTION -->
+
+        <div class="page-header">
+
+            <h2 class="page-title">
+                Parking Slots
+            </h2>
+
+            <p class="page-subtitle">
+                Select an available slot to continue with your reservation.
+            </p>
+
+        </div>
+
+
+        <!-- SLOT GRID -->
+
+        <div class="slot-grid">
+
+            <?php foreach ($slots as $row) { ?>
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <div class="slot-number">
+
+                                <?php echo htmlspecialchars($row['slot_number']); ?>
+
+                            </div>
+
+                            <div class="card-description">
+
+                                <?php echo htmlspecialchars($row['slot_type']); ?>
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <?php if ($row['status'] == 'available') { ?>
+
+                                <span class="badge badge-available">
+                                    AVAILABLE
+                                </span>
+
+                            <?php } else { ?>
+
+                                <span class="badge badge-occupied">
+                                    OCCUPIED
+                                </span>
+
+                            <?php } ?>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card-actions">
+
+                        <?php if ($row['status'] == 'available') { ?>
+
+                            <a
+                                href="reserve.php?slot_id=<?php echo $row['id']; ?>"
+                                class="btn btn-primary"
+                            >
+                                Reserve Slot
+                            </a>
+
+                        <?php } else { ?>
+
+                            <button
+                                class="btn btn-secondary"
+                                disabled
+                            >
+                                Currently Unavailable
+                            </button>
+
+                        <?php } ?>
+
+                    </div>
+
+                </div>
+
+            <?php } ?>
+
+        </div>
 
     </div>
 
-</div>
+</main>
+
+
+<?php include "components/footer.php"; ?>
+
 
 </body>
+
 </html>
